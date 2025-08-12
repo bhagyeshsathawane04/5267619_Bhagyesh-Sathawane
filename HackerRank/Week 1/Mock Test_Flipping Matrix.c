@@ -16,49 +16,65 @@ char** split_string(char*);
 
 int parse_int(char*);
 
+
 /*
- * Complete the 'sockMerchant' function below.
+ * Complete the 'flippingMatrix' function below.
  *
  * The function is expected to return an INTEGER.
- * The function accepts following parameters:
- *  1. INTEGER n
- *  2. INTEGER_ARRAY ar
+ * The function accepts 2D_INTEGER_ARRAY matrix as parameter.
  */
 
-int sockMerchant(int n, int ar_count, int* ar) {
-    int range[101] = {0}; // Assuming colors are in the range 1..100
-    int a = 0;
+int flippingMatrix(int matrix_rows, int matrix_columns, int** matrix) {
+    int n = matrix_rows / 2;  // since matrix is 2n × 2n
+    int max_sum = 0;
 
-    for (int i = 0; i < ar_count; i++) {
-        range[ar[i]]++;
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            int a = matrix[i][j];
+            int b = matrix[i][matrix_columns - j - 1];
+            int c = matrix[matrix_rows - i - 1][j];
+            int d = matrix[matrix_rows - i - 1][matrix_columns - j - 1];
+
+            int max_val = a;
+            if (b > max_val) max_val = b;
+            if (c > max_val) max_val = c;
+            if (d > max_val) max_val = d;
+
+            max_sum += max_val;
+        }
     }
 
-    for (int i = 0; i <= 100; i++) {
-        a += range[i] / 2;
-    }
-
-    return a;
+    return max_sum;
 }
+
 
 int main()
 {
     FILE* fptr = fopen(getenv("OUTPUT_PATH"), "w");
 
-    int n = parse_int(ltrim(rtrim(readline())));
+    int q = parse_int(ltrim(rtrim(readline())));
 
-    char** ar_temp = split_string(rtrim(readline()));
+    for (int q_itr = 0; q_itr < q; q_itr++) {
+        int n = parse_int(ltrim(rtrim(readline())));
 
-    int* ar = malloc(n * sizeof(int));
+        int** matrix = malloc((2 * n) * sizeof(int*));
 
-    for (int i = 0; i < n; i++) {
-        int ar_item = parse_int(*(ar_temp + i));
+        for (int i = 0; i < 2 * n; i++) {
+            *(matrix + i) = malloc((2 * n) * (sizeof(int)));
 
-        *(ar + i) = ar_item;
+            char** matrix_item_temp = split_string(rtrim(readline()));
+
+            for (int j = 0; j < 2 * n; j++) {
+                int matrix_item = parse_int(*(matrix_item_temp + j));
+
+                *(*(matrix + i) + j) = matrix_item;
+            }
+        }
+
+        int result = flippingMatrix(2 * n, 2 * n, matrix);
+
+        fprintf(fptr, "%d\n", result);
     }
-
-    int result = sockMerchant(n, n, ar);
-
-    fprintf(fptr, "%d\n", result);
 
     fclose(fptr);
 

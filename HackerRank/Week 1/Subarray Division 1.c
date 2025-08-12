@@ -17,28 +17,31 @@ char** split_string(char*);
 int parse_int(char*);
 
 /*
- * Complete the 'sockMerchant' function below.
+ * Complete the 'birthday' function below.
  *
  * The function is expected to return an INTEGER.
  * The function accepts following parameters:
- *  1. INTEGER n
- *  2. INTEGER_ARRAY ar
+ *  1. INTEGER_ARRAY s
+ *  2. INTEGER d
+ *  3. INTEGER m
  */
 
-int sockMerchant(int n, int ar_count, int* ar) {
-    int range[101] = {0}; // Assuming colors are in the range 1..100
-    int a = 0;
+int birthday(int s_count, int* s, int d, int m) {
+    int ways = 0;
 
-    for (int i = 0; i < ar_count; i++) {
-        range[ar[i]]++;
+    for (int i = 0; i <= s_count - m; i++) {
+        int sum = 0;
+        for (int j = 0; j < m; j++) {
+            sum += s[i + j];
+        }
+        if (sum == d) {
+            ways++;
+        }
     }
 
-    for (int i = 0; i <= 100; i++) {
-        a += range[i] / 2;
-    }
-
-    return a;
+    return ways;
 }
+
 
 int main()
 {
@@ -46,17 +49,23 @@ int main()
 
     int n = parse_int(ltrim(rtrim(readline())));
 
-    char** ar_temp = split_string(rtrim(readline()));
+    char** s_temp = split_string(rtrim(readline()));
 
-    int* ar = malloc(n * sizeof(int));
+    int* s = malloc(n * sizeof(int));
 
     for (int i = 0; i < n; i++) {
-        int ar_item = parse_int(*(ar_temp + i));
+        int s_item = parse_int(*(s_temp + i));
 
-        *(ar + i) = ar_item;
+        *(s + i) = s_item;
     }
 
-    int result = sockMerchant(n, n, ar);
+    char** first_multiple_input = split_string(rtrim(readline()));
+
+    int d = parse_int(*(first_multiple_input + 0));
+
+    int m = parse_int(*(first_multiple_input + 1));
+
+    int result = birthday(n, s, d, m);
 
     fprintf(fptr, "%d\n", result);
 

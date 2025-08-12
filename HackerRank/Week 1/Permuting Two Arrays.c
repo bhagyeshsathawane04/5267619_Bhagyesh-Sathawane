@@ -17,48 +17,92 @@ char** split_string(char*);
 int parse_int(char*);
 
 /*
- * Complete the 'sockMerchant' function below.
+ * Complete the 'twoArrays' function below.
  *
- * The function is expected to return an INTEGER.
+ * The function is expected to return a STRING.
  * The function accepts following parameters:
- *  1. INTEGER n
- *  2. INTEGER_ARRAY ar
+ *  1. INTEGER k
+ *  2. INTEGER_ARRAY A
+ *  3. INTEGER_ARRAY B
  */
 
-int sockMerchant(int n, int ar_count, int* ar) {
-    int range[101] = {0}; // Assuming colors are in the range 1..100
-    int a = 0;
-
-    for (int i = 0; i < ar_count; i++) {
-        range[ar[i]]++;
-    }
-
-    for (int i = 0; i <= 100; i++) {
-        a += range[i] / 2;
-    }
-
-    return a;
+/*
+ * To return the string from the function, you should either do static allocation or dynamic allocation
+ *
+ * For example,
+ * char* return_string_using_static_allocation() {
+ *     static char s[] = "static allocation of string";
+ *
+ *     return s;
+ * }
+ *
+ * char* return_string_using_dynamic_allocation() {
+ *     char* s = malloc(100 * sizeof(char));
+ *
+ *     s = "dynamic allocation of string";
+ *
+ *     return s;
+ * }
+ *
+ */
+int cmp(const void *a, const void *b) {
+    return (*(int*)a - *(int*)b);
 }
+
+char* twoArrays(int k, int A_count, int* A, int B_count, int* B) {
+    static char res[4]; // for "YES" or "NO"
+    
+    qsort(A, A_count, sizeof(int), cmp);
+    qsort(B, B_count, sizeof(int), cmp);
+    
+    for (int i = 0; i < A_count; i++) {
+        if (A[i] + B[B_count - 1 - i] < k) {
+            strcpy(res, "NO");
+            return res;
+        }
+    }
+    strcpy(res, "YES");
+    return res;
+}
+
 
 int main()
 {
     FILE* fptr = fopen(getenv("OUTPUT_PATH"), "w");
 
-    int n = parse_int(ltrim(rtrim(readline())));
+    int q = parse_int(ltrim(rtrim(readline())));
 
-    char** ar_temp = split_string(rtrim(readline()));
+    for (int q_itr = 0; q_itr < q; q_itr++) {
+        char** first_multiple_input = split_string(rtrim(readline()));
 
-    int* ar = malloc(n * sizeof(int));
+        int n = parse_int(*(first_multiple_input + 0));
 
-    for (int i = 0; i < n; i++) {
-        int ar_item = parse_int(*(ar_temp + i));
+        int k = parse_int(*(first_multiple_input + 1));
 
-        *(ar + i) = ar_item;
+        char** A_temp = split_string(rtrim(readline()));
+
+        int* A = malloc(n * sizeof(int));
+
+        for (int i = 0; i < n; i++) {
+            int A_item = parse_int(*(A_temp + i));
+
+            *(A + i) = A_item;
+        }
+
+        char** B_temp = split_string(rtrim(readline()));
+
+        int* B = malloc(n * sizeof(int));
+
+        for (int i = 0; i < n; i++) {
+            int B_item = parse_int(*(B_temp + i));
+
+            *(B + i) = B_item;
+        }
+
+        char* result = twoArrays(k, n, A, n, B);
+
+        fprintf(fptr, "%s\n", result);
     }
-
-    int result = sockMerchant(n, n, ar);
-
-    fprintf(fptr, "%d\n", result);
 
     fclose(fptr);
 
